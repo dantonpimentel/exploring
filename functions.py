@@ -41,23 +41,26 @@ def test_functions():
     y(647839, y=4)
 
 
-def print_params(func):
-    def print_values(*args, **kwargs):
-        print(func.__name__ + '(' +
-              ', '.join([str(arg) for arg in args]) +
-              (', ' if args and kwargs else '') +
-              ', '.join(["{}={}".format(k, v) for k, v in kwargs.items()]) + ')')
-        return func(*args, **kwargs)
-    return print_values
+def print_params(verbose):
+    def print_decorator(func):
+        def print_values(*args, **kwargs):
+            print(func.__name__ + '(' +
+                  ', '.join([str(arg) + (": " + str(type(arg)) if verbose else '') for arg in args]) +
+                  (', ' if args and kwargs else '') +
+                  ', '.join(["{}={}".format(k, v) + (": " + str(type(v)) if verbose else '')
+                             for k, v in kwargs.items()]) + ')')
+            return func(*args, **kwargs)
+        return print_values
+    return print_decorator
 
 
-@print_params
+@print_params(verbose=False)
 def a(x, y, z=0):
     return x + y + z
 
 
 def test_decorator():
-    print(a(1, 2, 3))
+    print(a(1, 2, z=3))
 
 
 if __name__ == '__main__':
